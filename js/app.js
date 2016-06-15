@@ -1,5 +1,5 @@
 $(document).ready(function(){	
-	var randomNum = generateRandomNum();
+  var randomNum = generateRandomNum();
   var guessCount = 0;
   var prevUserGuess = 0;
 
@@ -108,7 +108,8 @@ function generateRandomNum() {
   } // generates random number from 1 to input
   var number = Math.floor((Math.random() * input) + 1); 
   // adds a header telling them the range
-  $('header').append("<h3 id='guessRange'>Guess a number between 1 and " + input);
+  $("header").append("<h3 id='guessRange'>Guess a number between 1 and " + input);
+  $("#maxNum").text(input);
   return number;
 }
 
