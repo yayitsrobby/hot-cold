@@ -82,8 +82,13 @@ h1 {
 	font-weight: 900;
 	font-size: 3em;
 	padding: 0.8em;
+	padding-bottom: 0.2em;
 	color: #fff;
+}
 
+h3 {
+	padding-bottom: 0.8em;
+	color: #fff;
 }
 
 /*style for hidden modal*/
@@ -318,4 +323,12 @@ ul.guessBox li {
 	width: 95%;
 	margin: 0.2em;
 	color: #fff;
+}
+
+ul.guessBox .warmer {
+	background-color: #cc324b;
+}
+
+ul.guessBox .winner {
+	background-color: #32CD32;
 }
