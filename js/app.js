@@ -93,19 +93,22 @@ function newGame() {
   $("#count").text(count);
   $("#userGuess").val("");
   $("#feedback").text("Make your Guess!");
+  $("#guessRange").remove();
   return count;
 }
 
 //Generate random number from 1-100
 function generateRandomNum() {
+  // prompts for a ceiling number
   while (true) {
     var input = parseInt(prompt("Pick a number, any number!"))
     if (input > 1) {
       break;
     }
-  }
+  } // generates random number from 1 to input
   var number = Math.floor((Math.random() * input) + 1); 
-  $('header').append("<h3>Guess a number between 1 and " + input);
+  // adds a header telling them the range
+  $('header').append("<h3 id='guessRange'>Guess a number between 1 and " + input);
   return number;
 }
 
