@@ -1,13 +1,14 @@
 
 $(document).ready(function(){	
 	var randomNum = generateRandomNum();
-  var guessCount = 0;
+  	var guessCount = 0;
+  	var prevUserGuess = 0;
+
 	/*--- Display information modal box ---*/
   	$(".what").click(function(){
     	$(".overlay").fadeIn(1000);
 
   	});
-
   	/*--- Hide information modal box ---*/
   	$("a.close").click(function(){
   		$(".overlay").fadeOut(1000);
@@ -20,44 +21,56 @@ $(document).ready(function(){
       // determines if input is a number
       // if so, runs the comparison
       if (!(isNaN(userGuess))) {
-        compareNum(userGuess, randomNum);
+      	if(guessCount == 0) {
+        	compareNumFirst(userGuess, randomNum);
+      	} else {
+      		compareNumRest(userGuess, prevUserGuess, randomNum);
+      	}
         guessList(userGuess);
         guessCount++;
-        $('#count').text(guessCount);
+        $("#count").text(guessCount);
+        $("#userGuess").val("");
+        prevUserGuess = userGuess;
       } else {
         $("#userGuess").val("");
         alert("Please enter a number.");
       }
   		
-  	})
+  	});
+
+  	$(".new").click(function() {
+  		guessCount = newGame();
+  		console.log("after newGame()" + guessCount);
+  	});
 
 });
 
 // Compares numbers and gives feedback for each guess
-function compareNum(user, random) {
+function compareNumFirst(user, random) {
   var difference = Math.abs(user - random);
-  console.log(difference);
+
   if (difference >= 50) {
-    $('#feedback').html('Ice Cold!');
-    console.log('50');
+    $("#feedback").text("Ice Cold!");
   } else if (difference >= 30) {
-    $('#feedback').html('Cold');
-    console.log('30');
+    $("#feedback").text("Cold");
   } else if (difference >= 10) {
-    $('#feedback').html('Warm');
-    console.log('10');
+    $("#feedback").text("Warm");
   } else if (difference >= 1) {
-    $('#feedback').html('Very HOT!');
+    $("#feedback").text("Very HOT!");
   } else {
-    $('#feedback').html('You got it!');
+    $("#feedback").text("You got it!");
   }
 }
 
 //Function to restart everythin (newGame) 
 function newGame() {
-  guessCount = 0;
+  var count = 0;
   generateRandomNum();
-
+  $("#guessList").empty();
+  $("#count").text(count);
+  $("#userGuess").val("");
+  $("#feedback").text("Make your Guess!");
+  return count;
 }
 
 //Generate random number from 1-100
@@ -69,9 +82,22 @@ function generateRandomNum() {
 // 
 function guessList(user) {
   // add to the list of numbers
-  $('#guessList').append('<li>' + user + '</li>');
+  $("#guessList").append("<li>" + user + "</li>");
 }
 
+function compareNumRest(currentNum, oldNum, randNum) {
 
+	  var currentDiff = Math.abs(currentNum - randNum);
+	  var oldNewDiff = Math.abs(oldNum - randNum);
+	  if (currentDiff == 0) {
+	    $("#feedback").text("You got it!");
+	  } else if (currentDiff > oldNewDiff) {
+	    $("#feedback").text("Colder");
+	  } else if (currentDiff < oldNewDiff) {
+	    $("#feedback").text("Warmer");
+	  } else {
+	    $("#feedback").text("No change");
+	  }
+}
 
 
