@@ -1,7 +1,50 @@
 $(document).ready(function () {
+  /*------------------ VARIABLES ------------------*/
+  var input;
+  var randomNum;
+  var guessCount = 0;
+  var prevUserGuess = 0;
+
   /*------------------ FUNCTIONS ------------------*/
 
-  // Compares the initial guess and gives feedback
+  // STARTS A BRAND NEW GAME
+  function newGame() {
+    randomNum = generateRandomNum();
+    $('#guessList').empty();
+    $('#count').text(guessCount);
+    $('#userGuess').val('');
+    $('#feedback').text('Make your Guess!');
+    $('#relative-feedback').text('');
+    $('#guessRange').remove();
+  }
+
+  // GENERATES A RANDOM NUMBER FROM 1 TO USER INPUT
+  function generateRandomNum() {
+    // prompts for a ceiling number
+    while (true) {
+      input = parseInt(prompt('Pick a number, any number!'))
+      if (input > 1) {
+        break;
+      }
+    }
+
+    // generates random number from 1 to input
+    var number = Math.floor((Math.random() * input) + 1);
+
+    // adds a header telling them the range
+    $('header').append('<h3 id="guessRange">Guess a number between 1 and ' + input);
+
+    // adds the ceiling number to the instructions html
+    $('#maxNum').text(input);
+    return number;
+  }
+
+  // ADDS LIST ELEMENTS TO #GUESSLIST
+  function guessList(user) {
+    $('#guessList').append('<li>' + user + '</li>');
+  }
+
+  // COMPARES NUMBER TO GENERATED NUMBER AND GIVES FEEDBACK
   function compareNumFirst(user, random) {
     var difference = Math.abs(user - random);
     // determines how hot/cold the number is
@@ -11,70 +54,34 @@ $(document).ready(function () {
       $('#feedback').text('Cold');
     } else if (difference >= 10) {
       $('#feedback').text('Warm');
-      $('#guessList li').last().addClass('warmer');
+      $('#guessList li').last();
     } else if (difference >= 1) {
       $('#feedback').text('Very HOT!');
-      $('#guessList li').last().addClass('warmer');
+      $('#guessList li').last();
     } else {
       $('#feedback').text('You got it!');
       $('#guessList li').last().addClass('winner');
     }
   }
-  // Compares the rest of the guess and gives feedback based off the previous guess
+  // COMPARES NUMBER TO PREVIOUS GUESS AND GIVES SECONDARY FEEDBACK
   function compareNumRest(currentNum, oldNum, randNum) {
+    // checks how far guess is from generated number
     var currentDiff = Math.abs(currentNum - randNum);
+
+    // checks how far previous guess is from generated number
     var oldNewDiff = Math.abs(oldNum - randNum);
-    if (currentDiff === 0) {
-      $('#feedback').text('You got it!');
-      $('#guessList li').last().addClass('winner');
-    } else if (currentDiff > oldNewDiff) {
-      $('#feedback').text('Colder');
+
+    // compares two numbers and provides feedback
+    if (currentDiff > oldNewDiff) {
+      $('#relative-feedback').text('Colder');
     } else if (currentDiff < oldNewDiff) {
-      $('#feedback').text('Warmer');
+      $('#relative-feedback').text('Warmer');
       $('#guessList li').last().addClass('warmer');
     } else {
-      $('#feedback').text('No change');
+      $('#relative-feedback').text('No change');
     }
   }
 
-  //Function to restart everything (newGame)
-  function newGame() {
-    var count = 0;
-    generateRandomNum();
-    $('#guessList').empty();
-    $('#count').text(count);
-    $('#userGuess').val('');
-    $('#feedback').text('Make your Guess!');
-    $('#guessRange').remove();
-    return count;
-  }
-
-  //Generate random number from 1-100
-  function generateRandomNum() {
-    // prompts for a ceiling number
-    while (true) {
-      input = parseInt(prompt('Pick a number, any number!'))
-      if (input > 1) {
-        break;
-      }
-    } // generates random number from 1 to input
-    var number = Math.floor((Math.random() * input) + 1);
-    // adds a header telling them the range
-    $('header').append('<h3 id="guessRange">Guess a number between 1 and ' + input);
-    $('#maxNum').text(input);
-    return number;
-  }
-
-  function guessList(user) {
-    // add to the list of numbers
-    $('#guessList').append('<li>' + user + '</li>');
-  }
-
-  /*------------------ VARIABLES ------------------*/
-  var randomNum = generateRandomNum();
-  var guessCount = 0;
-  var prevUserGuess = 0;
-  var input;
 
   /*------------------ CODE BODY ------------------*/
 
@@ -88,40 +95,50 @@ $(document).ready(function () {
     $('.overlay').fadeOut(1000);
   });
 
-  //Event listener for user input
+  // STARTS THE GAME
+  newGame();
+
+  // WAITS FOR GUESS BUTTON TO BE CLICKED
   $('form').submit(function () {
-    event.preventDefault(); //Stops page from reloading
+    event.preventDefault();
+
+    // assigns and parses the inputed guess
     var userGuess = parseInt($('#userGuess').val());
+
     // determines if input is a number and in the right range
     if (!(isNaN(userGuess)) && userGuess > 0 && userGuess <= input) {
 
       // function to track all guesses
       guessList(userGuess);
 
-      // if its the first guess, runs the initial compare
-      if (guessCount == 0) {
+      // if its the first guess runs the initial compare
+      if (guessCount === 0) {
         compareNumFirst(userGuess, randomNum);
-      } else { // if its not the first guess, compares to previous number
+      } else {
+        compareNumFirst(userGuess, randomNum);
         compareNumRest(userGuess, prevUserGuess, randomNum);
       }
 
       // sets the number of guesses
       guessCount++;
       $('#count').text(guessCount);
+
       // clears the input field
       $('#userGuess').val('');
+
       // logs the guess as the 'previous' guess
       prevUserGuess = userGuess;
     } else { // if not a number, prompts to enter a number
       $('#userGuess').val('');
-      alert('Please enter a number.');
+      alert('Please enter a valid number.');
     }
   });
 
-  // listens for new game request
+  // WAITS FOR NEW GAME TO BE CLICKED TO RESET THE GAME
   $('.new').click(function () {
     // completely resets the game
-    guessCount = newGame();
+    guessCount = 0;
+    newGame();
   });
 
 });
